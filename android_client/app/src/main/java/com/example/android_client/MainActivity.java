@@ -7,16 +7,20 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Spinner;
+import android.widget.ToggleButton;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Toast;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,6 +41,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        // get your ToggleButton
+        final ToggleButton tgbutton = (ToggleButton) findViewById(R.id.toggleButton);
+
+        // attach an OnClickListener
+        tgbutton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                if(tgbutton.isChecked()){
+                    //Button is ON
+                    Toast.makeText(getBaseContext(), "Button is ON", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    //Button is OFF
+                    Toast.makeText(getBaseContext(), "Button is OFF", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         // Spinner element
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
@@ -80,9 +104,53 @@ public class MainActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> arg0) {
             }
         });
+
+
+
+        ImageButton ib1 = (ImageButton) findViewById(R.id.imageButton );
+        ImageButton ib2 = (ImageButton) findViewById(R.id.imageButton2 );
+        ImageButton ib3 = (ImageButton) findViewById(R.id.imageButton3);
+        ImageButton ib4 = (ImageButton) findViewById(R.id.imageButton4);
+
+        // Set a click listener for ImageButton
+        ib1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Message to confirm button click
+                Toast.makeText(getBaseContext(), "Push button 1", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Set a click listener for ImageButton
+        ib2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Message to confirm button click
+                Toast.makeText(getBaseContext(), "Push button 2", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Set a click listener for ImageButton
+        ib3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Message to confirm button click
+                Toast.makeText(getBaseContext(), "Push button 3", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Set a click listener for ImageButton
+        ib4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Message to confirm button click
+                Toast.makeText(getBaseContext(), "Push button 4", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
 
 
-    
+
 }
