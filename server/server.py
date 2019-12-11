@@ -10,8 +10,8 @@ def handle(conn_addr):
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-host = 'localhost'
-port = 50000
+host = '192.168.1.2'
+port = 5000
 
 try:
     s.bind((host, port))
