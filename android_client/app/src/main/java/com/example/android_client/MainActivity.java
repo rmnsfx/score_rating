@@ -20,13 +20,22 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import java.util.ArrayList;
 import java.util.List;
-
+import android.os.AsyncTask;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int IDM_OPEN = 101;
     private static final int IDM_SAVE = 102;
-
+    private Socket socket;
+    private static final int SERVERPORT = 5000;
+    private static final String SERVER_IP = "192.168.1.2";
 
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -36,6 +45,22 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    class ClientThread implements Runnable {
+
+        @Override
+        public void run() {
+
+            try {
+                InetAddress serverAddr = InetAddress.getByName(SERVER_IP);
+                socket = new Socket(serverAddr, SERVERPORT);
+
+            } catch (UnknownHostException e1) {
+                e1.printStackTrace();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +78,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View arg0) {
                 if(tgbutton.isChecked()){
                     //Button is ON
+
+                    new Thread(new ClientThread()).start();
+
                     Toast.makeText(getBaseContext(), "Button is ON", Toast.LENGTH_SHORT).show();
                 }
                 else {
@@ -95,9 +123,8 @@ public class MainActivity extends AppCompatActivity {
 
         spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view,
-                                       int position, long id) {
-                // показываем позиция нажатого элемента
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // показываем позицию нажатого элемента
                 Toast.makeText(getBaseContext(), "Position = " + position, Toast.LENGTH_SHORT).show();
             }
             @Override
