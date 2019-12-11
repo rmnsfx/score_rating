@@ -3,6 +3,16 @@ import socket
 import threading
 import time
 
+import wx
+
+app = wx.App()
+
+frame = wx.Frame(None, title='Simple application')
+frame.Show()
+
+app.MainLoop()
+
+
 def handle(conn_addr):
   print("Someone Connected")
   time.sleep(1000)
