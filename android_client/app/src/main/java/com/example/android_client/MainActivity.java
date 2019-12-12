@@ -31,19 +31,21 @@ import java.net.UnknownHostException;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int IDM_OPEN = 101;
-    private static final int IDM_SAVE = 102;
+//    private static final int IDM_OPEN = 101;
+//    private static final int IDM_SAVE = 102;
     private Socket socket;
     private static final int SERVERPORT = 5000;
-    private static final String SERVER_IP = "192.168.1.2";
+    private static final String SERVER_IP = "192.168.0.6";
+    private String str = "";
+    private PrintWriter out = null;
 
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        // добавляем пункты меню
-        menu.add(Menu.NONE, IDM_OPEN, Menu.NONE, "Открыть");
-        menu.add(Menu.NONE, IDM_SAVE, Menu.NONE, "Сохранить");
-        return true;
-    }
+//    public boolean onCreateOptionsMenu(Menu menu)
+//    {
+//        // добавляем пункты меню
+//        menu.add(Menu.NONE, IDM_OPEN, Menu.NONE, "Открыть");
+//        menu.add(Menu.NONE, IDM_SAVE, Menu.NONE, "Сохранить");
+//        return true;
+//    }
 
     class ClientThread implements Runnable {
 
@@ -62,6 +64,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    class SendDataThread implements Runnable {
+
+        @Override
+        public void run() {
+
+            try {
+                out = new PrintWriter(new BufferedWriter(
+                        new OutputStreamWriter(socket.getOutputStream())),true);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            out.println(str);
+
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         // get your ToggleButton
-        final ToggleButton tgbutton = (ToggleButton) findViewById(R.id.toggleButton);
+        final ToggleButton tgbutton = findViewById(R.id.toggleButton);
 
         // attach an OnClickListener
         tgbutton.setOnClickListener(new OnClickListener() {
@@ -77,21 +95,28 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View arg0) {
                 if(tgbutton.isChecked()){
-                    //Button is ON
 
+                    //SOCKET Button is ON
                     new Thread(new ClientThread()).start();
 
-                    Toast.makeText(getBaseContext(), "Button is ON", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getBaseContext(), "ВКЛ", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    //Button is OFF
-                    Toast.makeText(getBaseContext(), "Button is OFF", Toast.LENGTH_SHORT).show();
+                    //SOCKET Button is OFF
+                    try {
+                        socket.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+
+                    Toast.makeText(getBaseContext(), "ВЫКЛ", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
         // Spinner element
-        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+        Spinner spinner = findViewById(R.id.spinner);
 
         // Spinner Drop down elements
         List<String> categories = new ArrayList<String>();
@@ -134,16 +159,20 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        ImageButton ib1 = (ImageButton) findViewById(R.id.imageButton );
-        ImageButton ib2 = (ImageButton) findViewById(R.id.imageButton2 );
-        ImageButton ib3 = (ImageButton) findViewById(R.id.imageButton3);
-        ImageButton ib4 = (ImageButton) findViewById(R.id.imageButton4);
+        ImageButton ib1 = findViewById(R.id.imageButton );
+        ImageButton ib2 = findViewById(R.id.imageButton2 );
+        ImageButton ib3 = findViewById(R.id.imageButton3);
+        ImageButton ib4 = findViewById(R.id.imageButton4);
 
         // Set a click listener for ImageButton
         ib1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Message to confirm button click
+
+                str = "button1";
+                new Thread(new SendDataThread()).start();
+
                 Toast.makeText(getBaseContext(), "Push button 1", Toast.LENGTH_SHORT).show();
             }
         });
@@ -153,6 +182,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Message to confirm button click
+
+                str = "button2";
+                new Thread(new SendDataThread()).start();
+
                 Toast.makeText(getBaseContext(), "Push button 2", Toast.LENGTH_SHORT).show();
             }
         });
@@ -162,6 +195,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Message to confirm button click
+
+                str = "button3";
+                new Thread(new SendDataThread()).start();
+
                 Toast.makeText(getBaseContext(), "Push button 3", Toast.LENGTH_SHORT).show();
             }
         });
@@ -171,6 +208,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Message to confirm button click
+
+                str = "button4";
+                new Thread(new SendDataThread()).start();
+
                 Toast.makeText(getBaseContext(), "Push button 4", Toast.LENGTH_SHORT).show();
             }
         });
