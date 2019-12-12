@@ -2,14 +2,28 @@
 import socket
 import threading
 import time
-
 import wx
 
+
+def onButton(event):
+    print("Button pressed")
+
+
 app = wx.App()
-
 frame = wx.Frame(None, title='Simple application')
-frame.Show()
+frame.Center()
 
+panel = wx.Panel(frame, wx.ID_ANY)
+button1 = wx.Button(panel, wx.ID_ANY, 'Test1', (10, 10))
+button1.Bind(wx.EVT_BUTTON, onButton)
+
+button2 = wx.Button(panel, wx.ID_ANY, 'Test2', (150, 10))
+button2.Bind(wx.EVT_BUTTON, onButton)
+
+button3 = wx.Button(panel, wx.ID_ANY, 'Test3', (250, 10))
+button3.Bind(wx.EVT_BUTTON, onButton)
+
+frame.Show()
 app.MainLoop()
 
 
