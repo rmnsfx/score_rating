@@ -5,6 +5,10 @@ import time
 import wx
 
 
+
+
+
+
 def onButton(event):
     print("Button pressed")
 
@@ -14,14 +18,19 @@ frame = wx.Frame(None, title='Simple application')
 frame.Center()
 
 panel = wx.Panel(frame, wx.ID_ANY)
-button1 = wx.Button(panel, wx.ID_ANY, 'Test1', (10, 10))
+button1 = wx.Button(panel, wx.ID_ANY, 'Кадр 1', (10, 10))
 button1.Bind(wx.EVT_BUTTON, onButton)
 
-button2 = wx.Button(panel, wx.ID_ANY, 'Test2', (150, 10))
+button2 = wx.Button(panel, wx.ID_ANY, 'Кадр 2', (120, 10))
 button2.Bind(wx.EVT_BUTTON, onButton)
 
-button3 = wx.Button(panel, wx.ID_ANY, 'Test3', (250, 10))
+button3 = wx.Button(panel, wx.ID_ANY, 'Кадр 3', (240, 10))
 button3.Bind(wx.EVT_BUTTON, onButton)
+
+button4 = wx.Button(panel, wx.ID_ANY, 'Голосование', (10, 50))
+button4.Bind(wx.EVT_BUTTON, onButton)
+
+
 
 frame.Show()
 app.MainLoop()
