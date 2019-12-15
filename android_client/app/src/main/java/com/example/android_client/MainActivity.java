@@ -2,11 +2,13 @@ package com.example.android_client;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.Spinner;
 import android.widget.ToggleButton;
 import android.widget.CompoundButton;
@@ -50,6 +52,11 @@ public class MainActivity extends AppCompatActivity {
     private String inLine = "";
     private BufferedReader reader = null;
 
+    private Intent main_intent = null;
+    private Intent intent_1 = null;
+    private Intent intent_2 = null;
+    private Intent intent_3 = null;
+    private Intent intent_4 = null;
 
 
 //    public boolean onCreateOptionsMenu(Menu menu)
@@ -73,6 +80,37 @@ public class MainActivity extends AppCompatActivity {
                 e1.printStackTrace();
             } catch (IOException e1) {
                 e1.printStackTrace();
+            }
+        }
+    }
+
+    class KeepAlive implements Runnable {
+
+        @Override
+        public void run() {
+
+            while(true) {
+                try {
+
+                    if (socket != null) {
+
+                        out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
+                        out.println("heartbeat");
+                    }
+                    else
+                    {
+                        new Thread(new ClientThread()).start();
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -111,14 +149,34 @@ public class MainActivity extends AppCompatActivity {
                     try {
 
                         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                        inLine = reader.readLine();
 
-                        Log.i("response", inLine);
+                        while ((inLine = reader.readLine())!=null) {
+//                            inLine = reader.readLine();
+
+                            Log.i("response", inLine);
+
+                            if (inLine.contains("kadr1")) {
+
+                                startActivity(intent_1);
+                            }
+                            if (inLine.contains("kadr2")) {
+
+                                startActivity(intent_2);
+                            }
+                            if (inLine.contains("kadr3")) {
+
+                                startActivity(intent_3);
+                            }
+                            if (inLine.contains("kadr4")) {
+
+                                startActivity(intent_4);
+                            }
+                        }
 
                     } catch (IOException e) {
-                        Log.e("response", "" + e);
+                        Log.e("response", "ReadDataThread " + e);
                     } catch (NullPointerException e) {
-                        Log.e("response", "" + e);
+                        Log.e("response", "ReadDataThread NULL " + e);
                     }
 
             }
@@ -131,6 +189,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        main_intent = new Intent(this, MainActivity.class);
+        intent_1 = new Intent(this, FullscreenActivity_1.class);
+        intent_2 = new Intent(this, FullscreenActivity_2.class);
+        intent_3 = new Intent(this, FullscreenActivity_3.class);
+        intent_4 = new Intent(this, FullscreenActivity_4.class);
 
 
         // get your ToggleButton
@@ -147,6 +212,8 @@ public class MainActivity extends AppCompatActivity {
                     new Thread(new ClientThread()).start();
 
                     new Thread(new ReadDataThread()).start();
+
+                    new Thread(new KeepAlive()).start();
 
                     Toast.makeText(getBaseContext(), "ВКЛ", Toast.LENGTH_SHORT).show();
                 }

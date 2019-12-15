@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">android_client</string>
+
+    <string name="title_activity_fullscreen_1">FullscreenActivity_1</string>
+    <string name="dummy_button">Голосование</string>
+    <string name="dummy_content">Артист\n1</string>
 </resources>
