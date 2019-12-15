@@ -3,6 +3,7 @@ package com.example.android_client;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,6 +19,14 @@ import android.widget.ImageButton;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.util.ArrayList;
 import java.util.List;
 import android.os.AsyncTask;
@@ -31,13 +40,17 @@ import java.net.UnknownHostException;
 
 public class MainActivity extends AppCompatActivity {
 
-//    private static final int IDM_OPEN = 101;
-//    private static final int IDM_SAVE = 102;
+
     private Socket socket;
     private static final int SERVERPORT = 5000;
     private static final String SERVER_IP = "192.168.0.6";
     private String str = "";
     private PrintWriter out = null;
+    private int spinnerPosition = -1;
+    private String inLine = "";
+    private BufferedReader reader = null;
+
+
 
 //    public boolean onCreateOptionsMenu(Menu menu)
 //    {
@@ -69,16 +82,50 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
 
+
             try {
-                out = new PrintWriter(new BufferedWriter(
-                        new OutputStreamWriter(socket.getOutputStream())),true);
+
+                if (socket != null) {
+
+                    out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
+                    out.println(str);
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            out.println(str);
+
 
         }
     }
+
+
+    class ReadDataThread implements Runnable {
+
+        @Override
+        public void run() {
+
+
+            while (true) {
+
+                    try {
+
+                        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                        inLine = reader.readLine();
+
+                        Log.i("response", inLine);
+
+                    } catch (IOException e) {
+                        Log.e("response", "" + e);
+                    } catch (NullPointerException e) {
+                        Log.e("response", "" + e);
+                    }
+
+            }
+        }
+    }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,12 +146,14 @@ public class MainActivity extends AppCompatActivity {
                     //SOCKET Button is ON
                     new Thread(new ClientThread()).start();
 
+                    new Thread(new ReadDataThread()).start();
+
                     Toast.makeText(getBaseContext(), "ВКЛ", Toast.LENGTH_SHORT).show();
                 }
                 else {
                     //SOCKET Button is OFF
                     try {
-                        socket.close();
+                        if (socket != null) socket.close();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -114,6 +163,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+
+
+
 
         // Spinner element
         Spinner spinner = findViewById(R.id.spinner);
@@ -151,6 +204,8 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 // показываем позицию нажатого элемента
                 Toast.makeText(getBaseContext(), "Position = " + position, Toast.LENGTH_SHORT).show();
+
+                spinnerPosition = position;
             }
             @Override
             public void onNothingSelected(AdapterView<?> arg0) {
@@ -170,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Message to confirm button click
 
-                str = "button1";
+                str = "table" + Integer.toString(spinnerPosition) + " button1";
                 new Thread(new SendDataThread()).start();
 
                 Toast.makeText(getBaseContext(), "Push button 1", Toast.LENGTH_SHORT).show();
@@ -183,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Message to confirm button click
 
-                str = "button2";
+                str = "table" + Integer.toString(spinnerPosition) + " button2";
                 new Thread(new SendDataThread()).start();
 
                 Toast.makeText(getBaseContext(), "Push button 2", Toast.LENGTH_SHORT).show();
@@ -196,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Message to confirm button click
 
-                str = "button3";
+                str = "table" + Integer.toString(spinnerPosition) + " button3";
                 new Thread(new SendDataThread()).start();
 
                 Toast.makeText(getBaseContext(), "Push button 3", Toast.LENGTH_SHORT).show();
@@ -209,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Message to confirm button click
 
-                str = "button4";
+                str = "table" + Integer.toString(spinnerPosition) + " button4";
                 new Thread(new SendDataThread()).start();
 
                 Toast.makeText(getBaseContext(), "Push button 4", Toast.LENGTH_SHORT).show();
@@ -217,8 +272,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-
-
 
 
 }
