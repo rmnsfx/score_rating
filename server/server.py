@@ -3,11 +3,14 @@ import socket
 import threading
 import time
 import wx
+import psycopg2
+
 
 
 
 host = '192.168.0.6'
 port = 5000
+conn = None
 
 app = wx.App()
 frame = wx.Frame(None, title='Simple application')
@@ -17,13 +20,47 @@ text = wx.TextCtrl(panel, pos=(10, 150), size=(600, 50), style=wx.TE_MULTILINE|w
 
 
 
+
+
+def insert_artist(artist_name):
+    """ insert a new artist into the table """
+    sql = """INSERT INTO score_table(artist_id)
+             VALUES(%s);"""
+    pg_conn = None
+    #vendor_id = None
+
+    try:
+        # read database configuration
+        params = config()
+        # connect to the PostgreSQL database
+        pg_conn = psycopg2.connect(host="localhost", database="score", user="postgres", password="123")
+        # create a new cursor
+        cur = pg_conn.cursor()
+        # execute the INSERT statement
+        cur.execute(sql, (vendor_name,))
+        # get the generated id back
+        #vendor_id = cur.fetchone()[0]
+        # commit the changes to the database
+        conn.commit()
+        # close communication with the database
+        cur.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if pg_conn is not None:
+            pg_conn.close()
+
+    #return vendor_id
+
+
 def onButton1(event):
 
     text.Clear()
     text.AppendText("button1")
-    #conn.send("kadr1/n")
 
-    #wx.Image.Clear()
+    if conn != None:
+        conn.send("kadr1/n")
+
     png1 = wx.Image("image/img1.png", wx.BITMAP_TYPE_ANY).ConvertToBitmap()
     wx.StaticBitmap(panel, -1, png1, (100, 500), (png1.GetWidth(), png1.GetHeight()))
 
@@ -34,8 +71,9 @@ def onButton2(event):
 
     text.Clear()
     text.AppendText("button2")
-    #conn.send("kadr2/n")
 
+    if conn != None:
+        conn.send("kadr2/n")
 
     png2 = wx.Image("image/img2.png", wx.BITMAP_TYPE_ANY).ConvertToBitmap()
     wx.StaticBitmap(panel, -1, png2, (100, 500), (png2.GetWidth(), png2.GetHeight()))
@@ -46,7 +84,9 @@ def onButton3(event):
 
     text.Clear()
     text.AppendText("button3")
-    #conn.send("kadr3/n")
+
+    if conn != None:
+        conn.send("kadr3/n")
 
 
     png3 = wx.Image("image/img1.png", wx.BITMAP_TYPE_ANY).ConvertToBitmap()
@@ -58,7 +98,9 @@ def onButton4(event):
 
     text.Clear()
     text.AppendText("button4")
-    #conn.send("kadr4/n")
+
+    if conn != None:
+        conn.send("kadr4/n")
 
 
     png4 = wx.Image("image/img1.png", wx.BITMAP_TYPE_ANY).ConvertToBitmap()
@@ -71,8 +113,17 @@ def handle(conn, addr):
     print("Connected by: ", addr)
 
     while True:
-        data = conn.recv(100)
+        data = conn.recv(16)
         print(data)
+
+        if "artist1" in data:
+            insert_artist("artist1")
+        if "artist2" in data:
+            insert_artist("artist2")
+        if "artist3" in data:
+            insert_artist("artist3")
+        if "artist4" in data:
+            insert_artist("artist4")
 
 def interface():
 
