@@ -22,26 +22,25 @@ text = wx.TextCtrl(panel, pos=(10, 150), size=(600, 50), style=wx.TE_MULTILINE|w
 
 
 
-def insert_artist(artist_name):
+def insert_artist(artist_name, table):
     """ insert a new artist into the table """
-    sql = """INSERT INTO score_table(artist_id)
-             VALUES(%s);"""
+    sql = """INSERT INTO score_table(artist_id, table_name) VALUES(%s, %s);"""
     pg_conn = None
-    #vendor_id = None
+
 
     try:
         # read database configuration
-        params = config()
+        #params = config()
         # connect to the PostgreSQL database
         pg_conn = psycopg2.connect(host="localhost", database="score", user="postgres", password="123")
         # create a new cursor
         cur = pg_conn.cursor()
         # execute the INSERT statement
-        cur.execute(sql, (vendor_name,))
+        cur.execute(sql, (artist_name, table))
         # get the generated id back
         #vendor_id = cur.fetchone()[0]
         # commit the changes to the database
-        conn.commit()
+        pg_conn.commit()
         # close communication with the database
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
@@ -67,6 +66,8 @@ def onButton1(event):
     frame.Refresh()
 
 
+
+
 def onButton2(event):
 
     text.Clear()
@@ -79,6 +80,7 @@ def onButton2(event):
     wx.StaticBitmap(panel, -1, png2, (100, 500), (png2.GetWidth(), png2.GetHeight()))
 
     frame.Refresh()
+
 
 def onButton3(event):
 
